@@ -11,8 +11,15 @@ class DAVUtil {
     return this.client.getDirectoryContents('/')
   }
 
-  ge
+  getPage (filename) {
+    return this.client.getFileContents('/' + filename, { format: 'text' })
+  }
+
+  statFile (filename) {
+    return this.client.stat('/' + filename)
+  }
 }
+
 const du = new DAVUtil()
 export {
   du as DAVUtil

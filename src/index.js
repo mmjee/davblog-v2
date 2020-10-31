@@ -1,5 +1,6 @@
 import Vue from 'vue'
 import VueDisqus from 'vue-disqus'
+import 'bulma/css/bulma.min.css'
 
 import App from './App.vue'
 

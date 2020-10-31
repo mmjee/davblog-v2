@@ -9,6 +9,7 @@
     "lint": "eslint --cache --format codeframe --ext mjs,vue,js src"
   },
   "dependencies": {
+    "bulma": "^0.9.1",
     "marked": "^1.2.2",
     "vue": "^2",
     "vue-disqus": "^4.0.1",
