@@ -1,0 +1,23 @@
+{
+  "name": "davblog",
+  "version": "1.0.0",
+  "main": "index.js",
+  "license": "MIT",
+  "scripts": {
+    "start": "webpack-dev-server --mode development --open",
+    "build": "webpack --mode production",
+    "lint": "eslint --cache --format codeframe --ext mjs,vue,js src"
+  },
+  "dependencies": {
+    "vue": "^2"
+  },
+  "devDependencies": {
+    "@neutrinojs/standardjs": "^9.4.0",
+    "@neutrinojs/vue": "^9.4.0",
+    "eslint": "^7",
+    "neutrino": "^9.4.0",
+    "webpack": "^4",
+    "webpack-cli": "^3",
+    "webpack-dev-server": "^3"
+  }
+}
