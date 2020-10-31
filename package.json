@@ -9,7 +9,11 @@
     "lint": "eslint --cache --format codeframe --ext mjs,vue,js src"
   },
   "dependencies": {
-    "vue": "^2"
+    "marked": "^1.2.2",
+    "vue": "^2",
+    "vue-disqus": "^4.0.1",
+    "vue-loading-overlay": "^3.4.2",
+    "webdav": "^3.6.1"
   },
   "devDependencies": {
     "@neutrinojs/standardjs": "^9.4.0",

@@ -3,13 +3,18 @@ const vue = require('@neutrinojs/vue');
 
 module.exports = {
   options: {
-    root: __dirname,
+    root: __dirname
   },
   use: [
     standard(),
     vue({
       html: {
         title: 'davblog'
+      },
+      devServer: {
+        proxy: {
+          '/dav': 'http://localhost:5001'
+        }
       }
     }),
   ],
