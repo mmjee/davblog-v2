@@ -7,8 +7,8 @@ class DAVUtil {
     )
   }
 
-  listPages () {
-    return this.client.getDirectoryContents('/')
+  listPages (path) {
+    return this.client.getDirectoryContents('/' + path)
   }
 
   getPage (filename) {

@@ -4,13 +4,14 @@
       Last Modified: {{ localizedDT }}
     </div>
     <div v-html="html" />
+    <Disqus v-if="disableDisqus !== true" />
   </div>
 </template>
 
 <script>
 export default {
   name: 'PageContent',
-  props: ['html', 'attr'],
+  props: ['html', 'attr', 'disableDisqus'],
 
   computed: {
     localizedDT () {

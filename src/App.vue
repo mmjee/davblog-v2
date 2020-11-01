@@ -8,6 +8,7 @@ import { DAVUtil } from './lib/dav'
 import FourZeroFour from './components/FourZeroFour'
 import GenericErrorMessage from './components/GenericErrorMessage'
 import PageContent from './components/PageContent'
+import DirectoryBasedListing from './components/DirectoryBasedListing';
 
 export default {
   name: 'App',
@@ -15,25 +16,31 @@ export default {
     Loading,
     FourZeroFour,
     GenericErrorMessage,
-    PageContent
+    PageContent,
+    DirectoryBasedListing
   },
   data () {
     return {
       loading: true,
       errored: false,
       errorMessage: null,
-      attr: null,
+
       // Main stuff
+      attr: null,
       data: null,
       navhtml: null
     }
   },
 
   methods: {
-    async getFile (fullFN) {
+    async getFile (fullFN, isDir) {
       let v
       try {
-        v = await DAVUtil.getPage(fullFN)
+        if (isDir) {
+          v = await DAVUtil.listPages(fullFN)
+        } else {
+          v = await DAVUtil.getPage(fullFN)
+        }
         return v
       } catch (e) {
         if (e.isAxiosError && e.response.status === 404) {
@@ -59,30 +66,36 @@ export default {
   },
 
   async created () {
+    let isDir = false
+
     let filenameParts = window.location.pathname.split('/').slice(1)
     // handle /
     if (filenameParts.length === 1 && filenameParts[0].length === 0) {
       filenameParts = ['index.md']
+    // normal file, not a directory
     } else if (filenameParts[filenameParts.length - 1].length !== 0) {
       filenameParts[filenameParts.length - 1] += '.md'
+    } else {
+      isDir = true
     }
+
     const fullFN = filenameParts.join('/')
 
     const v = await Promise.all([
-      this.getFile(fullFN),
+      this.getFile(fullFN, isDir),
       this.getAttrs(fullFN),
       this.getFile('navigation.html')
     ])
 
     this.loading = false
-    this.data = v[0] ? marked(v[0]) : null
+    this.data = v[0] && !isDir ? marked(v[0]) : v[0]
     this.navhtml = v[2]
   }
 }
 </script>
 
 <template>
-  <div>
+  <div class="App">
     <div v-html="navhtml" />
     <loading
         v-if="loading"
@@ -92,7 +105,7 @@ export default {
     />
     <FourZeroFour v-else-if="errored === 404" />
     <GenericErrorMessage v-else-if="errored === true" :error-message="errorMessage" />
-    <DirectoryBasedListing v-else-if="attr.type === 'directory'" />
+    <DirectoryBasedListing v-else-if="attr.type === 'directory'" :files="data" />
     <PageContent v-else :html="data" :attr="attr" />
   </div>
 </template>
@@ -115,5 +128,10 @@ export default {
 
   h1, h2, h3, h4, h5, h6 {
     font-family: 'Raleway', sans-serif;
+  }
+
+  .App {
+    background: linear-gradient(0deg, rgba(156,18,222,0.15) 0%, rgba(255,255,255,0) 100%);
+    min-height: 100vh;
   }
 </style>
