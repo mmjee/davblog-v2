@@ -38,6 +38,18 @@
         </li>
       </ul>
     </nav>
+    <div class="columns">
+      <div class="column"></div>
+      <div class="column"></div>
+      <div class="column">
+        <label>
+          <input class="input" type="number" v-model="inputPageNo" placeholder="Page" />
+        </label>
+      </div>
+      <div class="column">
+        <button class="button is-info" @click="inputPageNo < maxPagesPossible && inputPageNo > 0 ? goToPage(inputPageNo) : goToPage(maxPagesPossible)">Goto Page {{ inputPageNo }}</button>
+      </div>
+    </div>
   </div>
 </template>
 
@@ -62,7 +74,9 @@ export default {
   data () {
     return {
       loading: true,
-      data: null
+      data: null,
+
+      inputPageNo: ''
     }
   },
 
