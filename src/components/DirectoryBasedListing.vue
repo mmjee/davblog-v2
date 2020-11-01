@@ -7,9 +7,37 @@
   />
   <div v-else>
     <div class="box" v-for="page in data">
-      <a :href="genURL(page[1])"><code>{{ genURL(page[1]) }}</code></a>
+      <a :href="genURL(page[1])" class="link"><code>{{ genURL(page[1]) }}</code></a>
       <PageContent :html="page[0]" :attr="page[1]" :disable-disqus="true" />
     </div>
+    <nav class="pagination" role="navigation" aria-label="pagination">
+      <a class="pagination-previous" v-on:click="goToPage(pageNo - 1)" v-if="(pageNo - 1) > 0">Previous</a>
+      <a class="pagination-next" v-on:click="goToPage(pageNo + 1)" v-if="(pageNo + 1) < maxPagesPossible">Next page</a>
+      <ul class="pagination-list">
+        <!-- for no 2 it'll be displayed in the next column anyway -->
+        <li v-if="pageNo !== 1 && pageNo !== 2">
+          <a class="pagination-link" aria-label="Goto page 1" v-on:click="goToPage(1)">1</a>
+        </li>
+        <li v-if="pageNo !== 1 && pageNo !== 2">
+          <span class="pagination-ellipsis">&hellip;</span>
+        </li>
+        <li v-if="(pageNo - 1) > 0">
+          <a class="pagination-link" :aria-label="'Goto page ' + (pageNo - 1)" v-on:click="goToPage(pageNo - 1)">{{ pageNo - 1}}</a>
+        </li>
+        <li>
+          <a class="pagination-link is-current" :aria-label="'Page ' + pageNo" aria-current="page">{{ pageNo }}</a>
+        </li>
+        <li v-if="(pageNo + 1) < maxPagesPossible">
+          <a class="pagination-link" :aria-label="'Goto page ' + (pageNo + 1)" v-on:click="goToPage(pageNo + 1)">{{ pageNo + 1}}</a>
+        </li>
+        <li v-if="pageNo !== maxPagesPossible">
+          <span class="pagination-ellipsis">&hellip;</span>
+        </li>
+        <li v-if="pageNo !== maxPagesPossible">
+          <a class="pagination-link" :aria-label="'Goto page ' + maxPagesPossible" v-on:click="goToPage(maxPagesPossible)">{{ maxPagesPossible }}</a>
+        </li>
+      </ul>
+    </nav>
   </div>
 </template>
 
@@ -43,6 +71,15 @@ export default {
       return window.location.origin + page.filename.replace(/\/+/, '/').replace('.md', '')
     },
 
+    goToPage (pg) {
+      const USQ = window.location.search ? qs.parse(window.location.search, { ignoreQueryPrefix: true }) : {}
+
+      USQ.page = pg
+      const nu = new URL(window.location.href)
+      nu.search = '?' + qs.stringify(USQ)
+      window.location.href = nu.href
+    },
+
     parseDatePortion (filename) {
       const parts = filename.split('-')
       if (parts.length <= 3) {
@@ -54,6 +91,25 @@ export default {
     }
   },
 
+  computed: {
+    pageNo () {
+      const USQ = window.location.search ? qs.parse(window.location.search, { ignoreQueryPrefix: true }) : {}
+      if (USQ.page) {
+        USQ.page = Number(USQ.page)
+      }
+      if (!Number.isFinite(USQ.page)) {
+        USQ.page = 1
+      }
+
+      return USQ.page
+    },
+
+    maxPagesPossible () {
+      // not sure why - 1 but it's what it is
+      return Number(((this.files.length - 1) / 2).toFixed(0))
+    }
+  },
+
   async mounted () {
     // see files, determine the top 2 to display, after skipping page * 2
     const totalFiles = this.files.length
@@ -61,7 +117,7 @@ export default {
     const USQ = window.location.search ? qs.parse(window.location.search, { ignoreQueryPrefix: true }) : {}
     let skip = 0
     if (USQ.page) {
-      skip = Number(USQ.page) * PAGESIZE
+      skip = Number(USQ.page - 1) * PAGESIZE
     }
     if (!Number.isFinite(skip)) {
       skip = 0
@@ -72,9 +128,10 @@ export default {
     }
 
     // sort
-    const files = this.files.sort((a, b) => {
+    const sortedFiles = this.files.sort((a, b) => {
       return this.parseDatePortion(b.basename).valueOf() - this.parseDatePortion(a.basename).valueOf()
-    }).slice(skip, 2)
+    })
+    const files = sortedFiles.slice(skip, skip + 2)
 
     // I would not really expect any error here. 404 is impossible since the data is sent by the server itself
     // And any network error or something is beyond our scope right now.

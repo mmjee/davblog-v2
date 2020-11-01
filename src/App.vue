@@ -117,7 +117,7 @@ export default {
     font-size: 1.125rem;
   }
 
-  .content a {
+  .content a, .link {
     color: black;
     text-decoration: underline;
     text-decoration-style: dashed;
