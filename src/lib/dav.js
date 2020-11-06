@@ -5,7 +5,7 @@ class DAVUtil {
     const baseURL = `https://dav.${window.location.host}`
 
     this.client = createClient(
-      baseURL
+      process.env.NODE_ENV === 'development' ? '/dav' : baseURL
     )
   }
 

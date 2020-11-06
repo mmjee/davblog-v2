@@ -10,6 +10,9 @@ import GenericErrorMessage from './components/GenericErrorMessage'
 import PageContent from './components/PageContent'
 import DirectoryBasedListing from './components/DirectoryBasedListing'
 
+// Vendor
+import NavPanel from './vendor/NavPanel'
+
 export default {
   name: 'App',
   components: {
@@ -17,7 +20,8 @@ export default {
     FourZeroFour,
     GenericErrorMessage,
     PageContent,
-    DirectoryBasedListing
+    DirectoryBasedListing,
+    NavPanel
   },
   data () {
     return {
@@ -83,8 +87,7 @@ export default {
 
     const v = await Promise.all([
       this.getFile(fullFN, isDir),
-      this.getAttrs(fullFN),
-      this.getFile('navigation.html')
+      this.getAttrs(fullFN)
     ])
 
     const pathname = window.location.pathname
@@ -92,14 +95,13 @@ export default {
     document.title = 'DAVBlog: ' + (pathname === '/' ? 'Index' : pathname)
     this.loading = false
     this.data = v[0] && !isDir ? marked(v[0]) : v[0]
-    this.navhtml = v[2]
   }
 }
 </script>
 
 <template>
   <div class="App">
-    <div v-html="navhtml" />
+    <NavPanel />
     <loading
         v-if="loading"
         :active.sync="loading"
