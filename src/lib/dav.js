@@ -2,8 +2,10 @@ import { createClient } from 'webdav/web'
 
 class DAVUtil {
   constructor () {
+    const baseURL = `https://dav.${window.location.host}`
+
     this.client = createClient(
-      '/dav'
+      baseURL
     )
   }
 

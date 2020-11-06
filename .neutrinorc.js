@@ -9,7 +9,7 @@ module.exports = {
     standard(),
     vue({
       html: {
-        title: 'davblog'
+        title: 'DAVBlog'
       },
       devServer: {
         proxy: {

@@ -8,7 +8,7 @@ import { DAVUtil } from './lib/dav'
 import FourZeroFour from './components/FourZeroFour'
 import GenericErrorMessage from './components/GenericErrorMessage'
 import PageContent from './components/PageContent'
-import DirectoryBasedListing from './components/DirectoryBasedListing';
+import DirectoryBasedListing from './components/DirectoryBasedListing'
 
 export default {
   name: 'App',
@@ -87,6 +87,9 @@ export default {
       this.getFile('navigation.html')
     ])
 
+    const pathname = window.location.pathname
+
+    document.title = 'DAVBlog: ' + (pathname === '/' ? 'Index' : pathname)
     this.loading = false
     this.data = v[0] && !isDir ? marked(v[0]) : v[0]
     this.navhtml = v[2]
