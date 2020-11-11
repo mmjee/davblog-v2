@@ -116,9 +116,9 @@ export default {
 </template>
 
 <style>
-  @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300&family=Raleway&display=swap');
+  @import url('https://fonts.googleapis.com/css2?family=IBM+Plex+Mono&display=swap');
   .content {
-    font-family: 'Poppins', sans-serif;
+    font-family: 'IBM Plex Mono', monospace;
     font-size: 1.125rem;
   }
 
@@ -129,10 +129,6 @@ export default {
     text-decoration-width: 2px;
     text-decoration-thickness: 2px;
     text-decoration-color: mediumvioletred;
-  }
-
-  h1, h2, h3, h4, h5, h6 {
-    font-family: 'Raleway', sans-serif;
   }
 
   .App {
