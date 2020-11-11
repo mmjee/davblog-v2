@@ -1,21 +1,21 @@
 <template>
-  <div class="container content mt-4">
+  <div class="container content mt-4 mb-4">
     <div>
-      Last Modified: {{ localizedDT }}
+      <p>Last Modified: {{ localizedModified }}</p>
     </div>
     <div v-html="html" />
-    <Disqus v-if="disableDisqus !== true" />
+    <Disqus v-if="isEmbedded !== true" />
   </div>
 </template>
 
 <script>
 export default {
   name: 'PageContent',
-  props: ['html', 'attr', 'disableDisqus'],
+  props: ['html', 'attr', 'isEmbedded'],
 
-  computed: {
-    localizedDT () {
-      const date = new Date(this.attr.lastmod)
+  methods: {
+    localizeDate (dt) {
+      const date = new Date(dt)
       const dtAPI = new Intl.DateTimeFormat([], {
         dateStyle: 'full',
         timeStyle: 'full',
@@ -23,6 +23,12 @@ export default {
       })
 
       return dtAPI.format(date)
+    }
+  },
+
+  computed: {
+    localizedModified () {
+      return this.localizeDate(this.attr.lastmod)
     }
   }
 }

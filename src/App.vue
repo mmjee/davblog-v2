@@ -5,6 +5,7 @@ import 'vue-loading-overlay/dist/vue-loading.css'
 
 // Custom
 import { DAVUtil } from './lib/dav'
+import Watermark from './components/Watermark'
 import FourZeroFour from './components/FourZeroFour'
 import GenericErrorMessage from './components/GenericErrorMessage'
 import PageContent from './components/PageContent'
@@ -16,6 +17,7 @@ import NavPanel from './vendor/NavPanel'
 export default {
   name: 'App',
   components: {
+    Watermark,
     Loading,
     FourZeroFour,
     GenericErrorMessage,
@@ -112,6 +114,7 @@ export default {
     <GenericErrorMessage v-else-if="errored === true" :error-message="errorMessage" />
     <DirectoryBasedListing v-else-if="attr.type === 'directory'" :files="data" />
     <PageContent v-else :html="data" :attr="attr" />
+    <Watermark />
   </div>
 </template>
 

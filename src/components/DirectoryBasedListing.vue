@@ -8,7 +8,7 @@
   <div v-else>
     <div class="box" v-for="page in data">
       <a :href="genURL(page[1])" class="link"><code>{{ genURL(page[1]) }}</code></a>
-      <PageContent :html="page[0]" :attr="page[1]" :disable-disqus="true" />
+      <PageContent :html="page[0]" :attr="page[1]" :is-embedded="true" />
     </div>
     <nav class="pagination" role="navigation" aria-label="pagination">
       <a class="pagination-previous" v-on:click="goToPage(pageNo - 1)" v-if="(pageNo - 1) > 0">Previous</a>
