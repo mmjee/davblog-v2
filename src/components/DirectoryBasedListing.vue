@@ -12,7 +12,7 @@
     </div>
     <nav class="pagination" role="navigation" aria-label="pagination">
       <a class="pagination-previous" v-on:click="goToPage(pageNo - 1)" v-if="(pageNo - 1) > 0">Previous</a>
-      <a class="pagination-next" v-on:click="goToPage(pageNo + 1)" v-if="(pageNo + 1) < maxPagesPossible">Next page</a>
+      <a class="pagination-next" v-on:click="goToPage(pageNo + 1)" v-if="pageNo < maxPagesPossible">Next page</a>
       <ul class="pagination-list">
         <!-- for no 2 it'll be displayed in the next column anyway -->
         <li v-if="pageNo !== 1 && pageNo !== 2">
@@ -108,8 +108,6 @@ export default {
 
     async syncData () {
       // see files, determine the top 2 to display, after skipping page * 2
-      const totalFiles = this.files.length
-
       const USQ = this.$route.query
       let skip = 0
       if (USQ.page) {
@@ -119,15 +117,11 @@ export default {
         skip = 0
       }
 
-      if ((PAGESIZE + skip) > totalFiles) {
-        skip = 0
-      }
-
       // sort
       const sortedFiles = this.files.sort((a, b) => {
         return this.parseDatePortion(b.basename).valueOf() - this.parseDatePortion(a.basename).valueOf()
       })
-      const files = sortedFiles.slice(skip, skip + 2)
+      const files = sortedFiles.slice(skip, skip + PAGESIZE)
 
       // I would not really expect any error here. 404 is impossible since the data is sent by the server itself
       // And any network error or something is beyond our scope right now.
