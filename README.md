@@ -10,7 +10,9 @@ yarn install
 yarn run build
 ```
 
-Now copy the build folder to the root folder of whatever site you are hosting. In production, DAVBlog by default expects a WebDAV-capable share on the `dav` subdomain of the domain it's being hosted on. 
+Continue to add an navigation panel (`vendor/NavPanel.vue`, example is in `examples/NavPanel.vue`).
+
+Now copy the build folder to the root folder of whatever site you are hosting. In production, DAVBlog by default expects a WebDAV-capable share on the `dav` subdomain of the domain it's being hosted on.
 
 What that means is, if you are hosting DAVBlog on `example.com`, then `dav.example.com` must be DAV-capable (and ensure CORS is set up).
 
