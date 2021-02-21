@@ -15,7 +15,7 @@ import DirectoryBasedListing from './components/DirectoryBasedListing'
 import NavPanel from './vendor/NavPanel'
 
 export default {
-  name: 'App',
+  name: 'Main',
   components: {
     Watermark,
     Loading,
@@ -43,7 +43,7 @@ export default {
       let v
       try {
         if (isDir) {
-          v = await DAVUtil.getJSON(fullFN + '/' + 'index.json')
+          v = await DAVUtil.getJSON(fullFN + 'index.json')
         } else {
           v = await DAVUtil.getPage(fullFN)
         }
@@ -61,42 +61,51 @@ export default {
     async getAttrs (fullFN) {
       // silently fail if request fails, assuming getPage will set error data instead
       try {
-        this.attr = await DAVUtil.statFile(fullFN)
+        return await DAVUtil.statFile(fullFN)
       } catch (e) {
         console.warn('Caught error while stat\'ng file', e)
-        this.stat = {
+        return {
           lastmod: null
         }
       }
+    },
+
+    async loadData () {
+      let isDir = false
+
+      let filenameParts = this.$route.params.pathMatch.split('/').slice(1)
+      // handle /
+      if (filenameParts.length === 1 && filenameParts[0].length === 0) {
+        filenameParts = ['index.md']
+        // normal file, not a directory
+      } else if (filenameParts[filenameParts.length - 1].length !== 0) {
+        filenameParts[filenameParts.length - 1] += '.md'
+      } else {
+        isDir = true
+      }
+
+      const fullFN = filenameParts.join('/')
+
+      const v = await Promise.all([
+        this.getFile(fullFN, isDir),
+        this.getAttrs(fullFN)
+      ])
+
+      const pathname = this.$route.params.pathMatch
+
+      document.title = 'DAVBlog: ' + (pathname === '/' ? 'Index' : pathname)
+      this.loading = false
+      this.data = v[0] && !isDir ? marked(v[0]) : v[0]
+      this.attr = v[1]
     }
   },
 
   async created () {
-    let isDir = false
+    return this.loadData()
+  },
 
-    let filenameParts = this.$route.params.pathMatch.split('/').slice(1)
-    // handle /
-    if (filenameParts.length === 1 && filenameParts[0].length === 0) {
-      filenameParts = ['index.md']
-    // normal file, not a directory
-    } else if (filenameParts[filenameParts.length - 1].length !== 0) {
-      filenameParts[filenameParts.length - 1] += '.md'
-    } else {
-      isDir = true
-    }
-
-    const fullFN = filenameParts.join('/')
-
-    const v = await Promise.all([
-      this.getFile(fullFN, isDir),
-      this.getAttrs(fullFN)
-    ])
-
-    const pathname = this.$route.params.pathMatch
-
-    document.title = 'DAVBlog: ' + (pathname === '/' ? 'Index' : pathname)
-    this.loading = false
-    this.data = v[0] && !isDir ? marked(v[0]) : v[0]
+  watch: {
+    $route: 'loadData'
   }
 }
 </script>

@@ -54,7 +54,6 @@
 </template>
 
 <script>
-import qs from 'qs'
 import marked from 'marked'
 import Loading from 'vue-loading-overlay'
 
