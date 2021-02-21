@@ -71,6 +71,8 @@ export default {
     },
 
     async loadData () {
+      this.errored = false
+      this.errorMessage = null
       let isDir = false
 
       let filenameParts = this.$route.params.pathMatch.split('/').slice(1)
