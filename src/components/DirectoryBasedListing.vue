@@ -89,8 +89,11 @@ export default {
     },
 
     goToPage (pg) {
-      const USQ = this.$route.query
-      USQ.page = pg
+      this.$router.push({
+        query: {
+          page: pg
+        }
+      })
     },
 
     parseDatePortion (filename) {
@@ -101,6 +104,38 @@ export default {
       } else {
         return new Date(Number(parts[0]), Number(parts[1]), Number(parts[2]))
       }
+    },
+
+    async syncData () {
+      // see files, determine the top 2 to display, after skipping page * 2
+      const totalFiles = this.files.length
+
+      const USQ = this.$route.query
+      let skip = 0
+      if (USQ.page) {
+        skip = Number(USQ.page - 1) * PAGESIZE
+      }
+      if (!Number.isFinite(skip)) {
+        skip = 0
+      }
+
+      if ((PAGESIZE + skip) > totalFiles) {
+        skip = 0
+      }
+
+      // sort
+      const sortedFiles = this.files.sort((a, b) => {
+        return this.parseDatePortion(b.basename).valueOf() - this.parseDatePortion(a.basename).valueOf()
+      })
+      const files = sortedFiles.slice(skip, skip + 2)
+
+      // I would not really expect any error here. 404 is impossible since the data is sent by the server itself
+      // And any network error or something is beyond our scope right now.
+      const fdata = await Promise.all(files.map(f => {
+        return Promise.all([DAVUtil.getPage(f.filename).then(d => marked(d)), DAVUtil.statFile(f.filename)])
+      }))
+      this.loading = false
+      this.data = fdata
     }
   },
 
@@ -117,40 +152,15 @@ export default {
 
     maxPagesPossible () {
       // not sure why - 1 but it's what it is
-      return Number(((this.files.length - 1) / 2).toFixed(0))
+      return Number((this.files.length / 2).toFixed(0))
     }
   },
 
+  watch: {
+    $route: 'syncData'
+  },
   async mounted () {
-    // see files, determine the top 2 to display, after skipping page * 2
-    const totalFiles = this.files.length
-
-    const USQ = this.$route.query
-    let skip = 0
-    if (USQ.page) {
-      skip = Number(USQ.page - 1) * PAGESIZE
-    }
-    if (!Number.isFinite(skip)) {
-      skip = 0
-    }
-
-    if ((PAGESIZE + skip) > totalFiles) {
-      skip = 0
-    }
-
-    // sort
-    const sortedFiles = this.files.sort((a, b) => {
-      return this.parseDatePortion(b.basename).valueOf() - this.parseDatePortion(a.basename).valueOf()
-    })
-    const files = sortedFiles.slice(skip, skip + 2)
-
-    // I would not really expect any error here. 404 is impossible since the data is sent by the server itself
-    // And any network error or something is beyond our scope right now.
-    const fdata = await Promise.all(files.map(f => {
-      return Promise.all([DAVUtil.getPage(f.filename).then(d => marked(d)), DAVUtil.statFile(f.filename)])
-    }))
-    this.loading = false
-    this.data = fdata
+    await this.syncData()
   }
 }
 </script>
