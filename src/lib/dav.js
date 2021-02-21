@@ -17,6 +17,12 @@ class DAVUtil {
     return this.client.getFileContents('/' + filename, { format: 'text' })
   }
 
+  async getJSON (filename) {
+    return JSON.parse(await this.client.getFileContents('/' + filename, {
+      format: 'text'
+    }))
+  }
+
   statFile (filename) {
     return this.client.stat('/' + filename)
   }

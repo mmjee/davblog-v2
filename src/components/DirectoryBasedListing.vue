@@ -7,7 +7,7 @@
   />
   <div v-else>
     <div class="box" v-for="page in data">
-      <a :href="genURL(page[1])" class="link"><code>{{ genURL(page[1]) }}</code></a>
+      <router-link :to="convFilenameToDAVURL(page[1].filename)">{{ genURL(page[1]) }}</router-link>
       <PageContent :html="page[0]" :attr="page[1]" :is-embedded="true" />
     </div>
     <nav class="pagination" role="navigation" aria-label="pagination">
@@ -81,17 +81,17 @@ export default {
   },
 
   methods: {
+    convFilenameToDAVURL (fn) {
+      return fn.replace(/\/+/, '/').replace('.md', '')
+    },
+
     genURL (page) {
-      return window.location.origin + page.filename.replace(/\/+/, '/').replace('.md', '')
+      return window.location.origin + this.convFilenameToDAVURL(page.filename)
     },
 
     goToPage (pg) {
-      const USQ = window.location.search ? qs.parse(window.location.search, { ignoreQueryPrefix: true }) : {}
-
+      const USQ = this.$route.query
       USQ.page = pg
-      const nu = new URL(window.location.href)
-      nu.search = '?' + qs.stringify(USQ)
-      window.location.href = nu.href
     },
 
     parseDatePortion (filename) {
@@ -107,15 +107,13 @@ export default {
 
   computed: {
     pageNo () {
-      const USQ = window.location.search ? qs.parse(window.location.search, { ignoreQueryPrefix: true }) : {}
+      const USQ = this.$route.query
       if (USQ.page) {
-        USQ.page = Number(USQ.page)
+        return Number(USQ.page)
       }
       if (!Number.isFinite(USQ.page)) {
-        USQ.page = 1
+        return 1
       }
-
-      return USQ.page
     },
 
     maxPagesPossible () {
@@ -128,7 +126,7 @@ export default {
     // see files, determine the top 2 to display, after skipping page * 2
     const totalFiles = this.files.length
 
-    const USQ = window.location.search ? qs.parse(window.location.search, { ignoreQueryPrefix: true }) : {}
+    const USQ = this.$route.query
     let skip = 0
     if (USQ.page) {
       skip = Number(USQ.page - 1) * PAGESIZE
