@@ -7,7 +7,7 @@
   />
   <div v-else>
     <div class="box" v-for="page in data">
-      <router-link :to="convFilenameToDAVURL(page[1].filename)">{{ genURL(page[1]) }}</router-link>
+      <router-link :to="convFilenameToDAVURL(page[1].filename)" class="link">{{ genURL(page[1]) }}</router-link>
       <PageContent :html="page[0]" :attr="page[1]" :is-embedded="true" />
     </div>
     <nav class="pagination" role="navigation" aria-label="pagination">
